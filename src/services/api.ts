@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://backendvergi.onrender.com';
 
 async function request(path: string, options: RequestInit = {}) {
   const url = `${BASE_URL}${path}`;
