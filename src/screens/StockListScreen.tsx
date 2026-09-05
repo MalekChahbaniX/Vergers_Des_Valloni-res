@@ -4,7 +4,7 @@ import { stockAPI } from '../services/api';
 import PaloxCard from '../components/PaloxCard';
 import { colors, radii, spacing } from '../outils/Theme';
 import ScreenContainer from '../components/ScreenContainer';
-import { Package } from 'lucide-react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
@@ -46,7 +46,7 @@ const StockListScreen = ({ navigation }: any) => {
   return (
     <ScreenContainer style={styles.container}>
       <View style={styles.header}>
-        <Package size={24} color={colors.accent} />
+        <MaterialCommunityIcons name="package-variant-closed" size={24} color={colors.accent} />
         <Text style={styles.title}>Stock</Text>
         {state === 'ready' && (
           <View style={styles.countBadge}>

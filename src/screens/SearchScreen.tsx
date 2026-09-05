@@ -12,7 +12,7 @@ import { stockAPI } from '../services/api';
 import PaloxCard from '../components/PaloxCard';
 import { colors, radii, spacing } from '../outils/Theme';
 import ScreenContainer from '../components/ScreenContainer';
-import { Search, X } from 'lucide-react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type SearchState = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -57,14 +57,14 @@ const SearchScreen = ({ navigation }: any) => {
         />
         {q.length > 0 && (
           <TouchableOpacity style={styles.clearButton} onPress={clear}>
-            <X size={17} color={colors.textMuted} />
+            <MaterialCommunityIcons name="close" size={17} color={colors.textMuted} />
           </TouchableOpacity>
         )}
       </View>
 
       <TouchableOpacity style={styles.searchButton} onPress={doSearch} activeOpacity={0.85}>
         <View style={styles.searchButtonContent}>
-          <Search size={18} color="#fff" />
+          <MaterialCommunityIcons name="magnify" size={18} color="#fff" />
           <Text style={styles.searchButtonText}>Rechercher</Text>
         </View>
       </TouchableOpacity>

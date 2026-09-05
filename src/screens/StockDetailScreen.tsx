@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-nat
 import { stockAPI } from '../services/api';
 import { colors, radii, spacing } from '../outils/Theme';
 import ScreenContainer from '../components/ScreenContainer';
-import { AlertCircle, Boxes } from 'lucide-react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface DetailRowProps {
   label: string;
@@ -55,7 +55,7 @@ const StockDetailScreen = ({ route }: any) => {
   if (state === 'notfound') {
     return (
       <ScreenContainer style={styles.centerFlex}>
-        <AlertCircle size={42} color={colors.accentWarn} strokeWidth={2} />
+        <MaterialCommunityIcons name="alert-circle-outline" size={42} color={colors.accentWarn} />
         <Text style={styles.notFoundTitle}>Palox introuvable</Text>
         <Text style={styles.notFoundText}>Cet élément n'existe plus ou a été déplacé.</Text>
       </ScreenContainer>
@@ -65,7 +65,7 @@ const StockDetailScreen = ({ route }: any) => {
   if (state === 'error') {
     return (
       <ScreenContainer style={styles.centerFlex}>
-        <AlertCircle size={36} color={colors.accentError} strokeWidth={2} />
+        <MaterialCommunityIcons name="alert-circle-outline" size={36} color={colors.accentError} />
         <Text style={styles.notFoundTitle}>Erreur de chargement</Text>
         <Text style={styles.notFoundText}>Impossible de récupérer les détails de ce palox.</Text>
       </ScreenContainer>
@@ -77,7 +77,7 @@ const StockDetailScreen = ({ route }: any) => {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <View style={styles.badge}>
-          <Boxes size={26} color={colors.accent} strokeWidth={2.2} />
+          <MaterialCommunityIcons name="package-variant-closed" size={26} color={colors.accent} />
         </View>
         <Text style={styles.title}>{item.barcode}</Text>
         <Text style={styles.subtitle}>{item.productId ?? 'Produit inconnu'}</Text>

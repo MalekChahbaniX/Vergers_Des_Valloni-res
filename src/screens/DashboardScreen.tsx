@@ -11,7 +11,7 @@ import {
   Modal,
   useWindowDimensions,
 } from 'react-native';
-import { BarChart3, Boxes, CircleAlert, Info, LayoutDashboard, Menu, Package, Plus, Search, UserCircle, LogOut, X, Scale, Sparkles } from 'lucide-react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { stockAPI } from '../services/api';
 import { useAuth } from '../store/AuthContext';
 import { colors } from '../outils/Theme';
@@ -38,7 +38,7 @@ interface StockStats {
 }
 
 type LoadState = 'loading' | 'ready' | 'error';
-type MenuIcon = typeof LayoutDashboard;
+type MenuIcon = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 type MenuItem = {
   screen: string;
@@ -52,12 +52,12 @@ const StatCard: React.FC<{
   label: string;
   value: string;
   accent: string;
-  icon: React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
+  icon: MenuIcon;
   wide?: boolean;
 }> = ({ label, value, accent, icon, wide }) => (
   <View style={[styles.card, wide && styles.cardWide]}>
     <View style={[styles.cardIconWrap, { backgroundColor: accent + '22' }]}>
-      {React.createElement(icon, { size: 20, color: accent, strokeWidth: 2.4 })}
+      <MaterialCommunityIcons name={icon} size={20} color={accent} />
     </View>
     <View style={styles.cardTextWrap}>
       <Text style={styles.cardValue}>{value}</Text>
@@ -139,7 +139,7 @@ const DashboardScreen = ({ navigation }: any) => {
               accessibilityRole="button"
               accessibilityLabel="Ouvrir le menu"
             >
-              <Menu size={22} color={ACCENT} strokeWidth={2.5} />
+              <MaterialCommunityIcons name="menu" size={22} color={ACCENT} />
             </TouchableOpacity>
           </View>
         </View>
@@ -154,7 +154,7 @@ const DashboardScreen = ({ navigation }: any) => {
         {state === 'error' && (
           <View style={styles.centerBlock}>
             <View style={[styles.cardIconWrap, { backgroundColor: ACCENT_ERROR + '22' }]}>
-              <CircleAlert size={22} color={ACCENT_ERROR} strokeWidth={2.4} />
+              <MaterialCommunityIcons name="alert-circle-outline" size={22} color={ACCENT_ERROR} />
             </View>
             <Text style={styles.errorTitle}>Impossible de charger les données</Text>
             <Text style={styles.centerText}>
@@ -169,7 +169,7 @@ const DashboardScreen = ({ navigation }: any) => {
         {state === 'ready' && hasNoData && (
           <View style={styles.centerBlock}>
             <View style={[styles.cardIconWrap, { backgroundColor: ACCENT_WARN + '22' }]}>
-              <Info size={22} color={ACCENT_WARN} strokeWidth={2.4} />
+              <MaterialCommunityIcons name="information-outline" size={22} color={ACCENT_WARN} />
             </View>
             <Text style={styles.errorTitle}>Aucune donnée disponible</Text>
             <Text style={styles.centerText}>
@@ -184,21 +184,21 @@ const DashboardScreen = ({ navigation }: any) => {
               label="Total Palox"
               value={stats?.count !== undefined ? String(stats.count) : '—'}
               accent={ACCENT}
-              icon={Boxes}
+              icon="package-variant-closed"
               wide={isWide}
             />
             <StatCard
               label="Tonnage"
               value={formatWeight(stats?.weight)}
               accent={ACCENT_ALT}
-              icon={Scale}
+              icon="scale-balance"
               wide={isWide}
             />
             <StatCard
               label="Variétés"
               value={stats?.products?.length !== undefined ? String(stats.products.length) : '—'}
               accent={ACCENT_WARN}
-              icon={Sparkles}
+              icon="creation-outline"
               wide={isWide}
             />
           </View>
@@ -224,17 +224,17 @@ const DashboardScreen = ({ navigation }: any) => {
                 onPress={() => setMenuVisible(false)}
                 accessibilityLabel="Fermer le menu"
               >
-                <X size={24} color={TEXT_MUTED} />
+                <MaterialCommunityIcons name="close" size={24} color={TEXT_MUTED} />
               </TouchableOpacity>
             </View>
 
             {([
-              { screen: 'Dashboard', icon: LayoutDashboard, label: 'Tableau de bord' },
-              { screen: 'StockList', icon: Package, label: 'Stock' },
-              { screen: 'Reception', icon: Plus, label: 'Réception' },
-              { screen: 'Search', icon: Search, label: 'Recherche' },
-              { screen: 'Statistics', icon: BarChart3, label: 'Statistiques' },
-              { screen: 'Profile', icon: UserCircle, label: 'Profil' },
+              { screen: 'Dashboard', icon: 'view-dashboard-outline', label: 'Tableau de bord' },
+              { screen: 'StockList', icon: 'package-variant-closed', label: 'Stock' },
+              { screen: 'Reception', icon: 'plus', label: 'Réception' },
+              { screen: 'Search', icon: 'magnify', label: 'Recherche' },
+              { screen: 'Statistics', icon: 'chart-bar', label: 'Statistiques' },
+              { screen: 'Profile', icon: 'account-circle-outline', label: 'Profil' },
             ] as MenuItem[]).map(({ screen, icon: Icon, label }) => (
               <TouchableOpacity
                 key={screen}
@@ -242,14 +242,14 @@ const DashboardScreen = ({ navigation }: any) => {
                 onPress={() => navigateTo(screen)}
                 accessibilityRole="button"
               >
-                <Icon size={20} color={ACCENT} strokeWidth={2.2} />
+                <MaterialCommunityIcons name={Icon} size={20} color={ACCENT} />
                 <Text style={styles.menuItemText}>{label}</Text>
               </TouchableOpacity>
             ))}
 
             <View style={styles.menuDivider} />
             <TouchableOpacity style={styles.menuLogout} onPress={signout}>
-              <LogOut size={20} color={ACCENT_WARN} strokeWidth={2.2} />
+              <MaterialCommunityIcons name="logout" size={20} color={ACCENT_WARN} />
               <Text style={styles.menuLogoutText}>Se déconnecter</Text>
             </TouchableOpacity>
           </View>

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity
 import { stockAPI } from '../services/api';
 import { colors, radii, spacing } from '../outils/Theme';
 import ScreenContainer from '../components/ScreenContainer';
-import { BarChart3 } from 'lucide-react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface StockStats {
   count?: number;
@@ -48,7 +48,7 @@ const StatisticsScreen = () => {
     <ScreenContainer style={styles.flex}>
       <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.titleRow}>
-        <BarChart3 size={24} color={colors.accent} />
+        <MaterialCommunityIcons name="chart-bar" size={24} color={colors.accent} />
         <Text style={styles.title}>Statistiques</Text>
       </View>
 

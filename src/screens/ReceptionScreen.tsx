@@ -12,7 +12,7 @@ import { stockAPI } from '../services/api';
 import { colors, radii, spacing } from '../outils/Theme';
 import StatusPopup, { PopupState } from '../components/StatusPopup';
 import ScreenContainer from '../components/ScreenContainer';
-import { Save } from 'lucide-react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface FieldConfig {
   key: 'barcode' | 'productId' | 'caliber' | 'coldRoomId' | 'location';
@@ -143,7 +143,7 @@ const ReceptionScreen = () => {
           <ActivityIndicator color={colors.textPrimary} />
         ) : (
           <View style={styles.submitContent}>
-            <Save size={18} color={colors.textPrimary} />
+            <MaterialCommunityIcons name="content-save-outline" size={18} color={colors.textPrimary} />
             <Text style={styles.submitText}>Enregistrer</Text>
           </View>
         )}

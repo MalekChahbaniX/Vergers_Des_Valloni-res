@@ -14,7 +14,7 @@ import {
   Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { CircleAlert, CircleCheck, Eye, EyeOff, Info } from 'lucide-react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { authAPI } from '../services/api';
 import { useAuth } from '../store/AuthContext';
 import { colors } from '../outils/Theme';
@@ -70,15 +70,11 @@ const StatusPopup: React.FC<{
       <Pressable style={styles.popupOverlay} onPress={onClose}>
         <Pressable style={[styles.popupCard, { borderColor: color }]} onPress={() => {}}>
           <View style={[styles.popupIconWrap, { backgroundColor: color + '22' }]}>
-            <Text style={[styles.popupIcon, { color }]}>
-              {state.type === 'error' ? (
-                <CircleAlert size={26} color={color} strokeWidth={2.4} />
-              ) : state.type === 'success' ? (
-                <CircleCheck size={26} color={color} strokeWidth={2.4} />
-              ) : (
-                <Info size={26} color={color} strokeWidth={2.4} />
-              )}
-            </Text>
+            <MaterialCommunityIcons
+              name={state.type === 'error' ? 'alert-circle-outline' : state.type === 'success' ? 'check-circle-outline' : 'information-outline'}
+              size={26}
+              color={color}
+            />
           </View>
           <Text style={styles.popupTitle}>{state.title}</Text>
           <Text style={styles.popupMessage}>{state.message}</Text>
@@ -254,7 +250,7 @@ const LoginScreen = () => {
                 style={styles.eyeButton}
                 onPress={() => setShowPassword((v) => !v)}
               >
-                {showPassword ? <EyeOff size={18} color={ACCENT} /> : <Eye size={18} color={ACCENT} />}
+                <MaterialCommunityIcons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color={ACCENT} />
               </TouchableOpacity>
             </View>
             {passwordError && <Text style={styles.fieldError}>{passwordError}</Text>}

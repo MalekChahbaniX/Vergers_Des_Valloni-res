@@ -4,7 +4,7 @@ import { useAuth } from '../store/AuthContext';
 import { colors, radii, spacing } from '../outils/Theme';
 import StatusPopup, { PopupState } from '../components/StatusPopup';
 import ScreenContainer from '../components/ScreenContainer';
-import { LogOut, UserCircle } from 'lucide-react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const initials = (name?: string) => {
   if (!name) return '?';
@@ -43,7 +43,7 @@ const ProfileScreen = () => {
     <ScreenContainer style={styles.container}>
       <View style={styles.header}>
         <View style={styles.avatar}>
-          <UserCircle size={42} color="#fff" strokeWidth={1.8} />
+          <MaterialCommunityIcons name="account-circle-outline" size={42} color="#fff" />
         </View>
         <Text style={styles.name}>{user?.name ?? '—'}</Text>
         {user?.role ? (
@@ -66,7 +66,7 @@ const ProfileScreen = () => {
       </View>
 
       <TouchableOpacity style={styles.signoutButton} onPress={confirmSignout} activeOpacity={0.85}>
-        <LogOut size={18} color={colors.accentError} />
+        <MaterialCommunityIcons name="logout" size={18} color={colors.accentError} />
         <Text style={styles.signoutText}>Se déconnecter</Text>
       </TouchableOpacity>
 
