@@ -92,7 +92,13 @@ const StatusPopup: React.FC<{
 
 // ---------- Login Screen ----------
 
-const LoginScreen = () => {
+interface LoginScreenProps {
+  navigation?: {
+    navigate: (screen: string) => void;
+  };
+}
+
+const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -161,8 +167,9 @@ const LoginScreen = () => {
 
       const data = res.data;
       const token = data?.access_token || null;
+      // TODO: confirm the exact field name the backend uses for role (Role / role / type…)
       const user = data?.userid
-        ? { id: String(data.userid), name: data.Nom || login.trim() }
+        ? { id: String(data.userid), name: data.Nom || login.trim(), role: data.type ?? data.role ?? data.Role }
         : null;
 
       if (!token || !user) {
@@ -170,7 +177,7 @@ const LoginScreen = () => {
         return;
       }
 
-      signin(token, user);
+      await signin(token, user);
       showPopup('success', 'Connexion réussie', 'Bienvenue !');
     } catch (err: any) {
       const status = err?.response?.status ?? err?.status;
@@ -283,7 +290,7 @@ const LoginScreen = () => {
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Pas encore de compte ? </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation?.navigate('Signup')}>
             <Text style={styles.footerLink}>Créer un compte</Text>
           </TouchableOpacity>
         </View>

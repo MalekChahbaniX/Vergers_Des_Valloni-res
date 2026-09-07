@@ -7,13 +7,10 @@ import {
   RefreshControl,
   ActivityIndicator,
   TouchableOpacity,
-  Pressable,
-  Modal,
   useWindowDimensions,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { stockAPI } from '../services/api';
-import { useAuth } from '../store/AuthContext';
 import { colors } from '../outils/Theme';
 import ScreenContainer from '../components/ScreenContainer';
 
@@ -37,15 +34,14 @@ interface StockStats {
   products?: { name?: string }[];
 }
 
+interface OperationalAlert {
+  type: 'capacity' | 'temperature';
+  severity: 'warning' | 'critical';
+  message: string;
+}
+
 type LoadState = 'loading' | 'ready' | 'error';
 type MenuIcon = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
-
-type MenuItem = {
-  screen: string;
-  icon: MenuIcon;
-  label: string;
-};
-
 // ---------- Stat Card ----------
 
 const StatCard: React.FC<{
@@ -68,13 +64,12 @@ const StatCard: React.FC<{
 
 // ---------- Dashboard Screen ----------
 
-const DashboardScreen = ({ navigation }: any) => {
-  const { signout } = useAuth();
+const DashboardScreen = () => {
   const { width } = useWindowDimensions();
-  const [menuVisible, setMenuVisible] = useState(false);
   const [stats, setStats] = useState<StockStats | null>(null);
   const [state, setState] = useState<LoadState>('loading');
   const [refreshing, setRefreshing] = useState(false);
+  const [alerts, setAlerts] = useState<OperationalAlert[]>([]);
 
   const load = useCallback(async (isRefresh = false) => {
     if (!isRefresh) setState('loading');
@@ -82,6 +77,12 @@ const DashboardScreen = ({ navigation }: any) => {
       const res = await stockAPI.statistics();
       const data = res?.data?.stats;
       setStats(data ?? null);
+      try {
+        const alertResponse = await stockAPI.alerts();
+        setAlerts(alertResponse?.data?.alerts ?? []);
+      } catch (alertError) {
+        console.warn('Operational alerts unavailable', alertError);
+      }
       setState('ready');
     } catch (err) {
       console.warn('Dashboard load error', err);
@@ -91,6 +92,8 @@ const DashboardScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     load();
+    const interval = setInterval(() => load(true), 60_000);
+    return () => clearInterval(interval);
   }, [load]);
 
   const onRefresh = async () => {
@@ -109,11 +112,6 @@ const DashboardScreen = ({ navigation }: any) => {
     (!stats || (stats.count === undefined && stats.weight === undefined && !stats.products));
 
   const isWide = width >= 600;
-  const navigateTo = (screen: string) => {
-    setMenuVisible(false);
-    navigation.navigate(screen);
-  };
-
   return (
     <ScreenContainer style={styles.flex}>
       <ScrollView
@@ -128,21 +126,19 @@ const DashboardScreen = ({ navigation }: any) => {
         }
       >
         <View style={styles.header}>
-          <View style={styles.headerTop}>
-            <View style={styles.titleWrap}>
-              <Text style={styles.title} numberOfLines={1}>Tableau de bord</Text>
-              <Text style={styles.subtitle}>Vue d'ensemble du stock</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={() => setMenuVisible(true)}
-              accessibilityRole="button"
-              accessibilityLabel="Ouvrir le menu"
-            >
-              <MaterialCommunityIcons name="menu" size={22} color={ACCENT} />
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.subtitle}>Vue d'ensemble du stock</Text>
         </View>
+
+        {alerts.map((alert, index) => (
+          <View key={`${alert.type}-${index}`} style={[styles.alertBanner, alert.severity === 'critical' && styles.alertCritical]}>
+            <MaterialCommunityIcons
+              name={alert.type === 'temperature' ? 'thermometer-alert' : 'alert-circle-outline'}
+              size={19}
+              color={alert.severity === 'critical' ? ACCENT_ERROR : ACCENT_WARN}
+            />
+            <Text style={styles.alertText}>{alert.message}</Text>
+          </View>
+        ))}
 
         {state === 'loading' && (
           <View style={styles.centerBlock}>
@@ -205,56 +201,6 @@ const DashboardScreen = ({ navigation }: any) => {
         )}
       </ScrollView>
 
-      <Modal
-        visible={menuVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setMenuVisible(false)}
-      >
-        <View style={styles.menuOverlay}>
-          <Pressable style={styles.menuBackdrop} onPress={() => setMenuVisible(false)} />
-          <View style={styles.menuPanel}>
-            <View style={styles.menuHeader}>
-              <View>
-                <Text style={styles.menuTitle}>Menu</Text>
-                <Text style={styles.menuSubtitle}>Gestion du stock</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setMenuVisible(false)}
-                accessibilityLabel="Fermer le menu"
-              >
-                <MaterialCommunityIcons name="close" size={24} color={TEXT_MUTED} />
-              </TouchableOpacity>
-            </View>
-
-            {([
-              { screen: 'Dashboard', icon: 'view-dashboard-outline', label: 'Tableau de bord' },
-              { screen: 'StockList', icon: 'package-variant-closed', label: 'Stock' },
-              { screen: 'Reception', icon: 'plus', label: 'Réception' },
-              { screen: 'Search', icon: 'magnify', label: 'Recherche' },
-              { screen: 'Statistics', icon: 'chart-bar', label: 'Statistiques' },
-              { screen: 'Profile', icon: 'account-circle-outline', label: 'Profil' },
-            ] as MenuItem[]).map(({ screen, icon: Icon, label }) => (
-              <TouchableOpacity
-                key={screen}
-                style={styles.menuItem}
-                onPress={() => navigateTo(screen)}
-                accessibilityRole="button"
-              >
-                <MaterialCommunityIcons name={Icon} size={20} color={ACCENT} />
-                <Text style={styles.menuItemText}>{label}</Text>
-              </TouchableOpacity>
-            ))}
-
-            <View style={styles.menuDivider} />
-            <TouchableOpacity style={styles.menuLogout} onPress={signout}>
-              <MaterialCommunityIcons name="logout" size={20} color={ACCENT_WARN} />
-              <Text style={styles.menuLogoutText}>Se déconnecter</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </ScreenContainer>
   );
 };
@@ -273,6 +219,9 @@ const styles = StyleSheet.create({
   titleWrap: { flex: 1, minWidth: 0 },
   title: { fontSize: 26, fontWeight: '800', color: TEXT_PRIMARY },
   subtitle: { fontSize: 14, color: TEXT_MUTED },
+  alertBanner: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, marginBottom: 10, borderRadius: 12, backgroundColor: ACCENT_WARN + '18' },
+  alertCritical: { backgroundColor: ACCENT_ERROR + '18' },
+  alertText: { flex: 1, color: TEXT_PRIMARY, fontSize: 13, fontWeight: '700' },
   menuButton: {
     width: 44,
     height: 44,
@@ -288,7 +237,7 @@ const styles = StyleSheet.create({
   menuIcon: { color: ACCENT, fontSize: 22, fontWeight: '700' },
 
   cardsWrap: { gap: 12 },
-  cardsWrapWide: { flexDirection: 'row', flexWrap: 'wrap' },
+  cardsWrapWide: { flexDirection: 'row', flexWrap: 'nowrap' },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -299,7 +248,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
   },
-  cardWide: { width: '31%', minWidth: 180 },
+  cardWide: { flex: 1, minWidth: 0, marginBottom: 0 },
   cardIconWrap: {
     width: 48,
     height: 48,

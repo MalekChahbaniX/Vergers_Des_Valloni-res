@@ -1,9 +1,15 @@
 const BASE_URL = 'https://backendvergi.onrender.com';
+let authToken: string | null = null;
+
+export const setAuthToken = (token: string | null) => {
+  authToken = token;
+};
 
 async function request(path: string, options: RequestInit = {}) {
   const url = `${BASE_URL}${path}`;
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (options.headers) Object.assign(headers, options.headers);
+  if (authToken) headers.Authorization = `Bearer ${authToken}`;
   const res = await fetch(url, { ...options, headers });
   const text = await res.text();
   try {
@@ -27,6 +33,7 @@ export const stockAPI = {
   addPalox: (body: any) => request('/stock/AjoutPalox', { method: 'POST', body: JSON.stringify(body) }),
   movePalox: (body: any) => request('/stock/MovePalox', { method: 'POST', body: JSON.stringify(body) }),
   statistics: (query = '') => request(`/stock/statistics${query ? '?' + query : ''}`, { method: 'GET' }),
+  alerts: () => request('/stock/alerts', { method: 'GET' }),
 };
 
 export default { BASE_URL };
